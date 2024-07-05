@@ -3,10 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"ngodeyuk-core/config"
-	"ngodeyuk-core/internal/hello/router"
+	helloRouter "ngodeyuk-core/internal/hello/router"
+	userRouter "ngodeyuk-core/internal/users/router"
 	"ngodeyuk-core/migrations"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -20,8 +22,10 @@ func main() {
 		log.Fatal("Failed to migrate database schema")
 	}
 
-	r := router.HelloRouter()
+	r := gin.Default()
+	helloRouter.HelloRouter(r)
+	userRouter.UserRouter(r, db)
 
 	fmt.Println("Server is running at http://localhost:2000")
-	log.Fatal(http.ListenAndServe(":2000", r))
+	log.Fatal(r.Run(":2000"))
 }

@@ -1,7 +1,7 @@
 package models
 
 type User struct {
-	UserID   string `gorm:"primaryKey;column:user_id"`
+	UserID   uint   `gorm:"primaryKey;autoIncrement;column:user_id"`
 	Name     string `gorm:"column:name"`
 	ImgURL   string `gorm:"column:img_url"`
 	Username string `gorm:"unique;column:username"`
