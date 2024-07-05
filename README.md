@@ -1,19 +1,20 @@
-<p align="center"><img src="./public/github/banner.png" width="400" alt="Laravel Logo"></p>
-<h2 align="center"><span style="color:#06b6d4;">Go</span>-ngodingyuk-core-project</h2>
+<p align="center"><img src="./public/github/banner.png" width="400" alt="banner"></p>
+<h2 align="center">Go-ngodeyuk-core-project</h2>
 
-## 🚀 <span style="color:#10b981;">Tech Stack</span>
-   - [<span style="color:#00ADD8;">Go</span>](https://go.dev/)
-   - [<span style="color:#45AAB8;">Gin</span>](https://gin-gonic.com/)
-   - [<span style="color:#F7A93D;">Gorm</span>](https://gorm.io/index.html)
-   - [<span style="color:#FFFFFF;">Postgresql</span>](https://www.postgresql.org/)
-   - [<span style="color:#2496ED;">Docker</span>](https://www.docker.com/)
+## 🚀 Tech Stack
+   - [Go](https://go.dev/)
+   - [Gin](https://gin-gonic.com/)
+   - [Gorm](https://gorm.io/index.html)
+   - [Postgresql](https://www.postgresql.org/)
+   - [Docker](https://www.docker.com/)
 
-## 📖 <span style="color:#10b981;">Structure</span>
+## 📖 Structure
 
 Know folder structure of this application first :
-[<span style="color:#00ADD8;">structure</span>](./docs/structure.md).
+[structure](./docs/structure.md).
+For api specs, you can see it [here](/docs/specs/readme.md)
 
-### 🧞 <span style="color:#10b981;">Simple Running Project</span>
+### 🧞 Simple Running Project
 
 if you use `Linux` or `WSL` you can use a script.
 
@@ -23,20 +24,29 @@ if you use `Linux` or `WSL` you can use a script.
   ```bash
   chmod -R +x scripts/
   ```
-- running main app :
+- Running docker for database :
+  - Run docker
+     ```bash
+      ./scripts/docker.sh up
+      ```
+  - Stop docker
+     ```bash
+      ./scripts/docker.sh down
+      ```
+- Running main app :
   ```bash
    ./scripts/run.sh
   ```
-- running testing app :
+- Running testing app :
    ```bash
    ./scripts/test.sh
    ```
 
-## 🚀 <span style="color:#10b981;">Contribute</span>
+## 🚀 Contribute
 
 How to contribute?
 1. Fork the Repository:
-   - Go to the [<span style="color:#00ADD8;">repository page</span>](https://github.com/ngodeyuk/go-ngodeyuk-core-project).
+   - Go to the [repository page](https://github.com/ngodeyuk/go-ngodeyuk-core-project).
    - Click on the "Fork" button in the top-right corner of the page.
    - This will create a copy of the repository in your own GitHub account.
   
@@ -59,14 +69,14 @@ How to contribute?
    ### examples:
    ```sh
    git add .
-   git commit -m "build: features users with service"
+   git commit -m "build: features(users) register service"
    ```
    ### Rules `commit` :
    - `build` : used when you want to create something new.
    - `feat` : used when you want to add features to existing code.
    - `refactor` : used when you want to change existing code.
    - `fix` : used when you have successfully fixed a bug.
-   - `test` : used when you have done a test.
+   - `docs` : used when you have written project documentation.
   
 6. Create a Pull Request:
    - Go to the original repository.
@@ -75,6 +85,6 @@ How to contribute?
    - Select your feature branch from the "compare" dropdown.
    - Click `Create Pull Request` and provide a description of your changes.
   
-## ⚙️ <span style="color:#10b981;">License</span>
+## ⚙️ License
 
-This project is licensed under the MIT License - see the [<span style="color:#00ADD8;">LICENSE</span>](/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](/LICENSE) file for details.
