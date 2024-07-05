@@ -1,0 +1,15 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:12.3-alpine
+    container_name: ngodeyuk_postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - '2001:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
