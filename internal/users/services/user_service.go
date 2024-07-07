@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"ngodeyuk-core/pkg/dto"
 	"ngodeyuk-core/pkg/models"
 
@@ -10,6 +11,7 @@ import (
 
 type UserService interface {
 	RegisterUser(dto.RegisterDTO) (models.User, error)
+	LoginUser(dto.LoginDTO) (models.User, error)
 }
 
 type userService struct {
@@ -37,4 +39,28 @@ func (s *userService) RegisterUser(registerDTO dto.RegisterDTO) (models.User, er
 	}
 
 	return user, nil
+}
+
+func (s *userService) LoginUser(input dto.LoginDTO) (models.User, error) {
+	var user models.User
+
+	username := input.Username
+	password := input.Password
+
+	err := s.db.Where("username = ?", username).Find(&user).Error
+	if err != nil {
+		return user, err
+	}
+
+	if user.UserID == 0 {
+		return user, errors.New("No user found on that username")
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+
 }

@@ -13,4 +13,5 @@ func UserRouter(r *gin.Engine, db *gorm.DB) {
 	userHandler := handlers.NewUserHandler(userService)
 
 	r.POST("api/register", userHandler.RegisterUser)
+	r.POST("api/login", userHandler.LoginUser)
 }
