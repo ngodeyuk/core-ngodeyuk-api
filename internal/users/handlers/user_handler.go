@@ -10,6 +10,7 @@ import (
 
 type UserHandler interface {
 	RegisterUser(c *gin.Context)
+	LoginUser(c *gin.Context)
 }
 
 type userHandler struct {
@@ -39,5 +40,23 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 			"Name":     user.Name,
 			"Username": user.Username,
 		},
+	})
+}
+
+func (h *userHandler) LoginUser(c *gin.Context) {
+	var inputDTO dto.LoginDTO
+	if err := c.ShouldBindJSON(&inputDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err := h.userService.LoginUser(inputDTO)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "login successfully",
 	})
 }
