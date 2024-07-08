@@ -53,7 +53,7 @@ func (s *userService) LoginUser(input dto.LoginDTO) (models.User, error) {
 	}
 
 	if user.UserID == 0 {
-		return user, errors.New("No user found on that username")
+		return user, errors.New("no user found on that username")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))

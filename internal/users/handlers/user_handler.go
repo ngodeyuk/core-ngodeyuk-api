@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"ngodeyuk-core/internal/users/services"
 	"ngodeyuk-core/pkg/dto"
+	"ngodeyuk-core/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -50,13 +51,20 @@ func (h *userHandler) LoginUser(c *gin.Context) {
 		return
 	}
 
-	_, err := h.userService.LoginUser(inputDTO)
+	user, err := h.userService.LoginUser(inputDTO)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
+	token, err := utils.GenerateJWT(user.UserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
 		"message": "login successfully",
+		"token":   token,
 	})
 }
