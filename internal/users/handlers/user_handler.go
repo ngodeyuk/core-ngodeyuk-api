@@ -12,6 +12,7 @@ import (
 type UserHandler interface {
 	RegisterUser(c *gin.Context)
 	LoginUser(c *gin.Context)
+	ChangePassword(c *gin.Context)
 }
 
 type userHandler struct {
@@ -67,4 +68,26 @@ func (h *userHandler) LoginUser(c *gin.Context) {
 		"message": "login successfully",
 		"token":   token,
 	})
+}
+
+func (h *userHandler) ChangePassword(c *gin.Context) {
+	var inputDTO dto.ChangePasswordDTO
+	if err := c.ShouldBindJSON(&inputDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "User ID not found in context"})
+		return
+	}
+
+	err := h.userService.ChangePassword(userID.(uint), inputDTO)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "password changed successfully"})
 }
