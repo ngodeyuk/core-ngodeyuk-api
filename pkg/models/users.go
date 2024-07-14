@@ -7,9 +7,9 @@ type User struct {
 	ImgURL   string `gorm:"column:img_url"`
 	Username string `gorm:"unique;column:username"`
 	Password string `gorm:"column:password"`
-	Heart    string `gorm:"column:heart"`
-	Points   string `gorm:"column:points"`
-	Course   Course `gorm:"foreignKey:CourseId"`
+	Heart    int    `gorm:"column:heart"`
+	Points   int    `gorm:"column:points"`
+	Course   Course `gorm:"foreignKey:CourseID"`
 }
 
 func (User) TableName() string {
