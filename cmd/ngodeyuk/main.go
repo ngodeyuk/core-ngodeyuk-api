@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"ngodeyuk-core/config"
+	courseRouter "ngodeyuk-core/internal/courses/router"
 	helloRouter "ngodeyuk-core/internal/hello/router"
 	userRouter "ngodeyuk-core/internal/users/router"
 	"ngodeyuk-core/migrations"
@@ -25,6 +26,7 @@ func main() {
 	r := gin.Default()
 	helloRouter.HelloRouter(r)
 	userRouter.UserRouter(r, db)
+	courseRouter.CourseRouter(r, db)
 
 	fmt.Println("Server is running at http://localhost:2000")
 	log.Fatal(r.Run(":2000"))
