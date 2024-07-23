@@ -53,7 +53,7 @@ func (s *userService) LoginUser(input dto.LoginDTO) (models.User, error) {
 		return user, err
 	}
 
-	if user.UserID == 0 {
+	if user.UserId == "" {
 		return user, errors.New("no user found on that username")
 	}
 
