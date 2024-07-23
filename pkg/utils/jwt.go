@@ -19,7 +19,7 @@ func init() {
 	jwtSecret = []byte(jwtSecretString)
 }
 
-func GenerateJWT(userID uint) (string, error) {
+func GenerateJWT(userID string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["user_id"] = userID
