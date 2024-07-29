@@ -1,18 +1,13 @@
-<p align="center"><img src="./public/github/banner.png" width="400" alt="banner"></p>
-<h2 align="center">Go-ngodeyuk-core-project</h2>
+<p align="center"><img src=".github/assets/banner.png" width="728" alt="banner"></p>
 
 ## 🚀 Tech Stack
-   - [Go](https://go.dev/)
-   - [Gin](https://gin-gonic.com/)
-   - [Gorm](https://gorm.io/index.html)
-   - [Postgresql](https://www.postgresql.org/)
-   - [Docker](https://www.docker.com/)
+  [Go](https://go.dev/), [Gin](https://gin-gonic.com/), [Gorm](https://gorm.io/index.html), [Postgresql](https://www.postgresql.org/), [Docker](https://www.docker.com/)
 
-## 📖 Structure
+<!-- ## 📖 Structure
 
 Know folder structure of this application first :
 [structure](./docs/structure.md).
-For api specs, you can see it [here](/docs/specs/readme.md)
+For api specs, you can see it [here](/docs/specs/readme.md) -->
 
 ### 🧞 Simple Running Project
 
@@ -22,25 +17,25 @@ if you use `Linux` or `WSL` you can use a script.
 
 - Make sure the script is executable:
   ```bash
-  chmod -R +x scripts/
+  chmod +x script.sh
   ```
-- Running docker for database :
-  - Run docker
-     ```bash
-      ./scripts/docker.sh up
-      ```
-  - Stop docker
-     ```bash
-      ./scripts/docker.sh down
-      ```
-- Running main app :
+- Then you can type:
   ```bash
-   ./scripts/run.sh
+   ./script.sh -h
   ```
-- Running testing app :
-   ```bash
-   ./scripts/test.sh
-   ```
+  you will get various information to carry out the project.
+
+#### want to make it easier to use the database with docker?
+- You can run it using docker compose
+   - Run docker
+     ```bash
+      docker compose up -d
+      ```
+   - Stop docker
+     ```bash
+      docker compose down
+      ```
+
 
 ## 🚀 Contribute
 
