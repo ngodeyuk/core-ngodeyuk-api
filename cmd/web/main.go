@@ -22,7 +22,7 @@ func main() {
 	if err != nil {
 		panic("failed to connect database.")
 	}
-	routes.UserRoutes(route, db)
+	routes.SetupRoutes(route, db)
 
 	fmt.Println("Server is running at http://localhost:2000")
 	log.Fatal(route.Run(":2000"))

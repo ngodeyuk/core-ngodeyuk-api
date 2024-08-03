@@ -9,11 +9,21 @@ import (
 	"ngodeyuk-core/internal/services"
 )
 
-func UserRoutes(route *gin.Engine, db *gorm.DB) {
+func SetupRoutes(route *gin.Engine, db *gorm.DB) {
 	repository := repositories.NewUserRepository(db)
 	service := services.NewUserService(repository)
 	handler := handlers.NewUserHandler(service)
 
 	route.POST("auth/register", handler.Register)
 	route.POST("auth/login", handler.Login)
+
+	api := route.Group("api")
+	{
+		repository := repositories.NewCourseRepository(db)
+		service := services.NewCourseService(repository)
+		handler := handlers.NewCourseHandler(service)
+
+		api.POST("course", handler.Create)
+
+	}
 }
