@@ -10,8 +10,9 @@ import (
 )
 
 type UserHandler interface {
-	Register(c *gin.Context)
-	Login(c *gin.Context)
+	Register(ctx *gin.Context)
+	Login(ctx *gin.Context)
+	ChangePassword(ctx *gin.Context)
 }
 
 type userHandler struct {
@@ -58,4 +59,25 @@ func (handler *userHandler) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"token": token,
 	})
+}
+
+func (handler *userHandler) ChangePassword(ctx *gin.Context) {
+	var input dtos.ChangePasswordDTO
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request payload"})
+		return
+	}
+	username, exists := ctx.Get("username")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	input.Username = username.(string)
+	err := handler.service.ChangePassword(&input)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to change password"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "change password successfully"})
 }

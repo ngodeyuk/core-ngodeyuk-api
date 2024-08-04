@@ -15,6 +15,7 @@ import (
 type UserService interface {
 	Register(dto *dtos.RegisterDTO) error
 	Login(dto *dtos.LoginDTO) (string, error)
+	ChangePassword(dto *dtos.ChangePasswordDTO) error
 }
 
 type userService struct {
@@ -65,4 +66,20 @@ func (service *userService) Login(dto *dtos.LoginDTO) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func (service *userService) ChangePassword(dto *dtos.ChangePasswordDTO) error {
+	user, err := service.repository.FindByUsername(dto.Username)
+	if err != nil {
+		return err
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(dto.OldPassword)); err != nil {
+		return err
+	}
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(dto.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	user.Password = string(hashedPassword)
+	return service.repository.Update(user)
 }
