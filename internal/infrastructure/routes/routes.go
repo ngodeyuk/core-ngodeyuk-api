@@ -6,6 +6,7 @@ import (
 
 	"ngodeyuk-core/internal/domain/repositories"
 	"ngodeyuk-core/internal/infrastructure/handlers"
+	"ngodeyuk-core/internal/infrastructure/middleware"
 	"ngodeyuk-core/internal/services"
 )
 
@@ -16,6 +17,12 @@ func SetupRoutes(route *gin.Engine, db *gorm.DB) {
 
 	route.POST("auth/register", handler.Register)
 	route.POST("auth/login", handler.Login)
+
+	user := route.Group("user")
+	user.Use(middleware.AuthMiddleware())
+	{
+		user.PUT("change-password", handler.ChangePassword)
+	}
 
 	api := route.Group("api")
 	{
