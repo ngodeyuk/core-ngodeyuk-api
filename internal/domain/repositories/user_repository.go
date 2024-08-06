@@ -10,6 +10,8 @@ import (
 type UserRepository interface {
 	// menyimpan user baru ke database
 	Create(user *models.User) error
+	// mencari semua data user
+	FindAll() ([]models.User, error)
 	// mencari user berdasarkan username
 	FindByUsername(username string) (*models.User, error)
 	// memperbarui data user yang ada di database
@@ -29,6 +31,15 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 // untuk menyimpan user baru kedalam database menggunakan gorm
 func (repository *userRepository) Create(user *models.User) error {
 	return repository.db.Create(user).Error
+}
+
+// untuk mencari semua data user, lalu mengembalikan semua user jika ditemukan dan error jika tidak ada
+func (repository *userRepository) FindAll() ([]models.User, error) {
+	var users []models.User
+	if err := repository.db.Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 
 // untuk mencari user berdasarkan username, lalu mengembalikan user jika ditemukan dan error jika tidak ditemukan
