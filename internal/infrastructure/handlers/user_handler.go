@@ -13,6 +13,7 @@ type UserHandler interface {
 	Register(ctx *gin.Context)
 	Login(ctx *gin.Context)
 	ChangePassword(ctx *gin.Context)
+	Update(ctx *gin.Context)
 }
 
 type userHandler struct {
@@ -69,7 +70,7 @@ func (handler *userHandler) ChangePassword(ctx *gin.Context) {
 	}
 	username, exists := ctx.Get("username")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 	input.Username = username.(string)
@@ -80,4 +81,30 @@ func (handler *userHandler) ChangePassword(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "change password successfully"})
+}
+
+func (handler *userHandler) Update(ctx *gin.Context) {
+	var input dtos.UpdateDTO
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	username, exists := ctx.Get("username")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	if err := handler.service.Update(username.(string), &input); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"name":  input.Name,
+			"point": input.Point,
+			"heart": input.Heart,
+		},
+	})
 }

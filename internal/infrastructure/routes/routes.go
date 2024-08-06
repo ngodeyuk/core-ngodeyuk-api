@@ -22,6 +22,7 @@ func SetupRoutes(route *gin.Engine, db *gorm.DB) {
 	user.Use(middleware.AuthMiddleware())
 	{
 		user.PUT("change-password", handler.ChangePassword)
+		user.PATCH("update", handler.Update)
 	}
 
 	api := route.Group("api")
