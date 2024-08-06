@@ -16,6 +16,7 @@ type UserService interface {
 	Register(dto *dtos.RegisterDTO) error
 	Login(dto *dtos.LoginDTO) (string, error)
 	ChangePassword(dto *dtos.ChangePasswordDTO) error
+	Update(username string, dto *dtos.UpdateDTO) error
 }
 
 type userService struct {
@@ -82,4 +83,24 @@ func (service *userService) ChangePassword(dto *dtos.ChangePasswordDTO) error {
 	}
 	user.Password = string(hashedPassword)
 	return service.repository.Update(user)
+}
+
+func (service *userService) Update(username string, dto *dtos.UpdateDTO) error {
+	user, err := service.repository.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+	if dto.Name != "" {
+		user.Name = dto.Name
+	}
+	if dto.Point > 0 {
+		user.Points += dto.Point
+	}
+	if dto.Heart > 0 {
+		user.Heart = dto.Heart
+	}
+	if err := service.repository.Update(user); err != nil {
+		return err
+	}
+	return nil
 }
