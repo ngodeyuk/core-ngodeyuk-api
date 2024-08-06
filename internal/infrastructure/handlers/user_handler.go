@@ -14,6 +14,8 @@ type UserHandler interface {
 	Login(ctx *gin.Context)
 	ChangePassword(ctx *gin.Context)
 	Update(ctx *gin.Context)
+	GetAll(ctx *gin.Context)
+	GetByUsername(ctx *gin.Context)
 }
 
 type userHandler struct {
@@ -107,4 +109,48 @@ func (handler *userHandler) Update(ctx *gin.Context) {
 			"heart": input.Heart,
 		},
 	})
+}
+
+func (handler *userHandler) GetAll(ctx *gin.Context) {
+	users, err := handler.service.GetAll()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	var response []dtos.UserDTO
+	for _, user := range users {
+		response = append(response, dtos.UserDTO{
+			UserId:   user.UserId,
+			Name:     user.Name,
+			Username: user.Username,
+			ImgURL:   user.ImgURL,
+			Heart:    user.Heart,
+			Points:   user.Points,
+		})
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": response,
+	})
+}
+
+func (handler *userHandler) GetByUsername(ctx *gin.Context) {
+	username, exists := ctx.Get("username")
+	if !exists {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "unauthorized"})
+		return
+	}
+	user, err := handler.service.GetByUsername(username.(string))
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	response := dtos.UserDTO{
+		UserId:   user.UserId,
+		Name:     user.Name,
+		ImgURL:   user.ImgURL,
+		Username: user.Username,
+		Heart:    user.Heart,
+		Points:   user.Points,
+	}
+	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }

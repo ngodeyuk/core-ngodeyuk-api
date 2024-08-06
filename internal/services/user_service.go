@@ -19,6 +19,8 @@ type UserService interface {
 	ChangePassword(dto *dtos.ChangePasswordDTO) error
 	Update(username string, dto *dtos.UpdateDTO) error
 	StartHeartUpdater()
+	GetAll() ([]models.User, error)
+	GetByUsername(username string) (*models.User, error)
 }
 
 type userService struct {
@@ -113,4 +115,12 @@ func (service *userService) Update(username string, dto *dtos.UpdateDTO) error {
 
 func (service *userService) StartHeartUpdater() {
 	utils.StartHeartUpdater(service.repository, 1*time.Hour)
+}
+
+func (service *userService) GetAll() ([]models.User, error) {
+	return service.repository.FindAll()
+}
+
+func (service *userService) GetByUsername(username string) (*models.User, error) {
+	return service.repository.FindByUsername(username)
 }
