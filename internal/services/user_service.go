@@ -97,8 +97,12 @@ func (service *userService) Update(username string, dto *dtos.UpdateDTO) error {
 		user.Points += dto.Point
 	}
 	if dto.Heart > 0 {
-		user.Heart = dto.Heart
+		currentHeart := user.Heart
+		if currentHeart > 0 {
+			user.Heart -= dto.Heart
+		}
 	}
+	user.LastHeartTime = time.Now()
 	if err := service.repository.Update(user); err != nil {
 		return err
 	}
