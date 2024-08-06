@@ -1,5 +1,7 @@
 package dtos
 
+import "time"
+
 type RegisterDTO struct {
 	Name     string `json:"name"     binding:"required"`
 	Username string `json:"username" binding:"required"`
@@ -21,4 +23,14 @@ type UpdateDTO struct {
 	Name  string `json:"name"`
 	Heart int    `json:"heart"`
 	Point int    `json:"point"`
+}
+
+type UserDTO struct {
+	UserId        string    `json:"user_id"`
+	Name          string    `json:"name"`
+	ImgURL        string    `json:"img_url"`
+	Username      string    `json:"username"`
+	Heart         int       `json:"heart"`
+	LastHeartTime time.Time `json:"last_heart_time"`
+	Points        int       `json:"point"`
 }
