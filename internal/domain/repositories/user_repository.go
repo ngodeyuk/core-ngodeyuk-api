@@ -16,6 +16,8 @@ type UserRepository interface {
 	FindByUsername(username string) (*models.User, error)
 	// memperbarui data user yang ada di database
 	Update(user *models.User) error
+	// menghapus user yang sudah ad di database
+	Delete(user *models.User) error
 }
 
 // untuk mengimplementasikan repository user mengunakan gorm
@@ -55,6 +57,14 @@ func (repository *userRepository) FindByUsername(username string) (*models.User,
 // untuk memperbarui data user yang sudah ada didatabase menggunakan gorm
 func (repository *userRepository) Update(user *models.User) error {
 	if err := repository.db.Save(user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// untuk menghapus user yang sudah ada di database menggunakan gorm
+func (repository *userRepository) Delete(user *models.User) error {
+	if err := repository.db.Delete(user).Error; err != nil {
 		return err
 	}
 	return nil

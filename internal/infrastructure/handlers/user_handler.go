@@ -16,6 +16,7 @@ type UserHandler interface {
 	Update(ctx *gin.Context)
 	GetAll(ctx *gin.Context)
 	GetByUsername(ctx *gin.Context)
+	DeleteByUsername(ctx *gin.Context)
 }
 
 type userHandler struct {
@@ -153,4 +154,16 @@ func (handler *userHandler) GetByUsername(ctx *gin.Context) {
 		Points:   user.Points,
 	}
 	ctx.JSON(http.StatusOK, gin.H{"data": response})
+}
+
+func (handler *userHandler) DeleteByUsername(ctx *gin.Context) {
+	username, exists := ctx.Get("username")
+	if !exists {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "unauthorized"})
+	}
+	err := handler.service.DeleteByUsername(username.(string))
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "delete user successfully"})
 }
