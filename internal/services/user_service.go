@@ -112,5 +112,5 @@ func (service *userService) Update(username string, dto *dtos.UpdateDTO) error {
 }
 
 func (service *userService) StartHeartUpdater() {
-	utils.StartHeartUpdater(service.repository, 1*time.Minute)
+	utils.StartHeartUpdater(service.repository, 1*time.Hour)
 }
