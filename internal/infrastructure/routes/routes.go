@@ -13,6 +13,7 @@ import (
 func SetupRoutes(route *gin.Engine, db *gorm.DB) {
 	repository := repositories.NewUserRepository(db)
 	service := services.NewUserService(repository)
+	service.StartHeartUpdater()
 	handler := handlers.NewUserHandler(service)
 
 	route.POST("auth/register", handler.Register)

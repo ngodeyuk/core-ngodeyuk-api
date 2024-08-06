@@ -10,6 +10,7 @@ import (
 	"ngodeyuk-core/internal/domain/dtos"
 	"ngodeyuk-core/internal/domain/models"
 	"ngodeyuk-core/internal/domain/repositories"
+	"ngodeyuk-core/pkg/utils"
 )
 
 type UserService interface {
@@ -17,6 +18,7 @@ type UserService interface {
 	Login(dto *dtos.LoginDTO) (string, error)
 	ChangePassword(dto *dtos.ChangePasswordDTO) error
 	Update(username string, dto *dtos.UpdateDTO) error
+	StartHeartUpdater()
 }
 
 type userService struct {
@@ -107,4 +109,8 @@ func (service *userService) Update(username string, dto *dtos.UpdateDTO) error {
 		return err
 	}
 	return nil
+}
+
+func (service *userService) StartHeartUpdater() {
+	utils.StartHeartUpdater(service.repository, 1*time.Minute)
 }
