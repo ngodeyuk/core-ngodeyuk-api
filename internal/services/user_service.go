@@ -21,6 +21,7 @@ type UserService interface {
 	StartHeartUpdater()
 	GetAll() ([]models.User, error)
 	GetByUsername(username string) (*models.User, error)
+	DeleteByUsername(username string) error
 }
 
 type userService struct {
@@ -123,4 +124,12 @@ func (service *userService) GetAll() ([]models.User, error) {
 
 func (service *userService) GetByUsername(username string) (*models.User, error) {
 	return service.repository.FindByUsername(username)
+}
+
+func (service *userService) DeleteByUsername(username string) error {
+	user, err := service.repository.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+	return service.repository.Delete(user)
 }
