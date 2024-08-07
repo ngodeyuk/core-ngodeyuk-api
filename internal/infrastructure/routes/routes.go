@@ -22,11 +22,12 @@ func SetupRoutes(route *gin.Engine, db *gorm.DB) {
 	user := route.Group("user")
 	user.Use(middleware.AuthMiddleware())
 	{
+		user.PUT("upload", handler.UploadProfile)
 		user.PUT("change-password", handler.ChangePassword)
 		user.PATCH("update", handler.Update)
 		user.GET("/", handler.GetAll)
-		user.GET("/current", handler.GetByUsername)
-		user.DELETE("/delete", handler.DeleteByUsername)
+		user.GET("current", handler.GetByUsername)
+		user.DELETE("delete", handler.DeleteByUsername)
 	}
 
 	api := route.Group("api")
