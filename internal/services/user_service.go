@@ -13,15 +13,25 @@ import (
 	"ngodeyuk-core/pkg/utils"
 )
 
+// mendefinisikan layanan yang diperlukan untuk berinteraksi dengan service
 type UserService interface {
+	// untuk mendaftarkan pengguna baru berdasarkan dto yang diberikan
 	Register(dto *dtos.RegisterDTO) error
+	// untuk melakukan proses otentikasi user dan kemudian mengembalikan token JWT apabila berhasil
 	Login(dto *dtos.LoginDTO) (string, error)
+	// untuk mengubah password user dengan memvalidasi password sebelumnya
 	ChangePassword(dto *dtos.ChangePasswordDTO) error
+	// untuk mengupdate data user berdasarkan username
 	Update(username string, dto *dtos.UpdateDTO) error
+	// untuk memulai update otomatis pada heart dengan interval yang sudah ditentukan
 	StartHeartUpdater()
+	// untuk mengembalikan semua data user
 	GetAll() ([]models.User, error)
+	// untuk mengembalikan data user berdasarkan username
 	GetByUsername(username string) (*models.User, error)
+	// untuk menghapus data user berdasarkan username
 	DeleteByUsername(username string) error
+	// untuk mengupload foto profile pada user berdasarkan username
 	UploadProfile(dto *dtos.UploadDTO) error
 }
 
@@ -29,6 +39,7 @@ type userService struct {
 	repository repositories.UserRepository
 }
 
+// untuk membuat instance baru dari user service dengan repository
 func NewUserService(repository repositories.UserRepository) UserService {
 	return &userService{repository}
 }
