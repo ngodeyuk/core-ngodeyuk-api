@@ -34,3 +34,8 @@ type UserDTO struct {
 	LastHeartTime time.Time `json:"last_heart_time"`
 	Points        int       `json:"point"`
 }
+
+type UploadDTO struct {
+	Username string `json:"username"`
+	ImgURL   string `json:"img_url"`
+}

@@ -22,6 +22,7 @@ type UserService interface {
 	GetAll() ([]models.User, error)
 	GetByUsername(username string) (*models.User, error)
 	DeleteByUsername(username string) error
+	UploadProfile(dto *dtos.UploadDTO) error
 }
 
 type userService struct {
@@ -132,4 +133,16 @@ func (service *userService) DeleteByUsername(username string) error {
 		return err
 	}
 	return service.repository.Delete(user)
+}
+
+func (service *userService) UploadProfile(dto *dtos.UploadDTO) error {
+	user, err := service.repository.FindByUsername(dto.Username)
+	if err != nil {
+		return err
+	}
+	user.ImgURL = dto.ImgURL
+	if err := service.repository.Update(user); err != nil {
+		return err
+	}
+	return nil
 }

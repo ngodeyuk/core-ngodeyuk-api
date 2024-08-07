@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -22,6 +23,10 @@ func main() {
 	if err != nil {
 		panic("failed to connect database.")
 	}
+
+	publicPath := filepath.Join(".", "public")
+	route.Static("/public", publicPath)
+
 	routes.SetupRoutes(route, db)
 
 	fmt.Println("Server is running at http://localhost:2000")

@@ -1,7 +1,10 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 
@@ -17,6 +20,7 @@ type UserHandler interface {
 	GetAll(ctx *gin.Context)
 	GetByUsername(ctx *gin.Context)
 	DeleteByUsername(ctx *gin.Context)
+	UploadProfile(ctx *gin.Context)
 }
 
 type userHandler struct {
@@ -124,7 +128,7 @@ func (handler *userHandler) GetAll(ctx *gin.Context) {
 			UserId:   user.UserId,
 			Name:     user.Name,
 			Username: user.Username,
-			ImgURL:   user.ImgURL,
+			ImgURL:   "/" + user.ImgURL,
 			Heart:    user.Heart,
 			Points:   user.Points,
 		})
@@ -148,7 +152,7 @@ func (handler *userHandler) GetByUsername(ctx *gin.Context) {
 	response := dtos.UserDTO{
 		UserId:   user.UserId,
 		Name:     user.Name,
-		ImgURL:   user.ImgURL,
+		ImgURL:   "/" + user.ImgURL,
 		Username: user.Username,
 		Heart:    user.Heart,
 		Points:   user.Points,
@@ -160,10 +164,52 @@ func (handler *userHandler) DeleteByUsername(ctx *gin.Context) {
 	username, exists := ctx.Get("username")
 	if !exists {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "unauthorized"})
+		return
 	}
 	err := handler.service.DeleteByUsername(username.(string))
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "delete user successfully"})
+}
+
+func (handler *userHandler) UploadProfile(ctx *gin.Context) {
+	username, exists := ctx.Get("username")
+	if !exists {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "unauthorized"})
+		return
+	}
+	file, err := ctx.FormFile("image")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "image file required"})
+		return
+	}
+	fileExt := filepath.Ext(file.Filename)
+	filename := fmt.Sprintf("%s%s", username.(string), fileExt)
+	filepath := "public/users/" + filename
+
+	if _, err := os.Stat(filepath); err != nil {
+		if err := os.Remove(filepath); err != nil {
+			ctx.JSON(
+				http.StatusInternalServerError,
+				gin.H{"error": "failed to delete exiting images"},
+			)
+		}
+	}
+
+	if err := ctx.SaveUploadedFile(file, filepath); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	input := dtos.UploadDTO{
+		Username: username.(string),
+		ImgURL:   filepath,
+	}
+	if err := handler.service.UploadProfile(&input); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to upload profile"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Profile updated successfully"})
 }
