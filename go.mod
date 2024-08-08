@@ -7,6 +7,7 @@ require github.com/gin-gonic/gin v1.10.0
 require github.com/golang-jwt/jwt/v5 v5.2.1
 
 require (
+	github.com/gin-contrib/cors v1.7.2 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 )
