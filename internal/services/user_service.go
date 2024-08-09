@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"sort"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -35,6 +36,8 @@ type UserService interface {
 	DeleteByUsername(username string) error
 	// untuk mengupload foto profile pada user berdasarkan username
 	UploadProfile(dto *dtos.UploadDTO) error
+	// untuk mengembalikan data user berdasarkan point tertinggi
+	Leaderboard() ([]models.User, error)
 }
 
 type userService struct {
@@ -203,4 +206,23 @@ func (service *userService) UploadProfile(dto *dtos.UploadDTO) error {
 		return err
 	}
 	return nil
+}
+
+func (service *userService) Leaderboard() ([]models.User, error) {
+	users, err := service.repository.FindAll()
+	if err != nil {
+		return nil, err
+	}
+	sort.Slice(users, func(i, j int) bool {
+		return users[i].Points > users[j].Points
+	})
+	var leaderboard []models.User
+	for _, user := range users {
+		leaderboard = append(leaderboard, models.User{
+			Username: user.Username,
+			ImgURL:   user.ImgURL,
+			Points:   user.Points,
+		})
+	}
+	return leaderboard, nil
 }

@@ -27,6 +27,7 @@ func SetupRoutes(route *gin.Engine, db *gorm.DB) {
 		user.PATCH("update", handler.Update)
 		user.GET("/", handler.GetAll)
 		user.GET("current", handler.GetByUsername)
+		user.GET("leaderboard", handler.Leaderboard)
 		user.DELETE("delete", handler.DeleteByUsername)
 	}
 

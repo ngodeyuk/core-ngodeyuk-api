@@ -21,6 +21,7 @@ type UserHandler interface {
 	GetByUsername(ctx *gin.Context)
 	DeleteByUsername(ctx *gin.Context)
 	UploadProfile(ctx *gin.Context)
+	Leaderboard(ctx *gin.Context)
 }
 
 type userHandler struct {
@@ -221,4 +222,24 @@ func (handler *userHandler) UploadProfile(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Profile updated successfully"})
+}
+
+func (handler *userHandler) Leaderboard(ctx *gin.Context) {
+	leaderboard, err := handler.service.Leaderboard()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	var response []dtos.LeaderboardDTO
+	for _, user := range leaderboard {
+		response = append(response, dtos.LeaderboardDTO{
+			Username: user.Username,
+			ImgURL:   "/" + user.ImgURL,
+			Points:   user.Points,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": response,
+	})
 }
