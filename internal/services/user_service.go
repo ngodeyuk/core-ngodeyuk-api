@@ -1,7 +1,9 @@
 package services
 
 import (
+	"errors"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -45,6 +47,15 @@ func NewUserService(repository repositories.UserRepository) UserService {
 }
 
 func (service *userService) Register(dto *dtos.RegisterDTO) error {
+	// validasi ketika username kurang dari 3 karakter
+	if len(dto.Username) < 3 {
+		return errors.New("username must be atleast 3 character long")
+	}
+	// validasi ketika password kurang dari 8 karakter
+	if len(dto.Password) < 8 {
+		return errors.New("password must be atleast 8 character long")
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword(
 		[]byte(dto.Password),
 		bcrypt.DefaultCost,
@@ -91,8 +102,17 @@ func (service *userService) ChangePassword(dto *dtos.ChangePasswordDTO) error {
 	if err != nil {
 		return err
 	}
+	// validasi ketika password lama salah
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(dto.OldPassword)); err != nil {
-		return err
+		return errors.New("old password is incorrect")
+	}
+	// validasi ketika password lama dengan password baru sama
+	if dto.OldPassword == dto.NewPassword {
+		return errors.New("new password must be different from old password")
+	}
+	// validasi ketika password mempunyai kurang dari 8 karakter
+	if len(dto.NewPassword) < 8 {
+		return errors.New("password must be atleast 8 character long")
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(dto.NewPassword), bcrypt.DefaultCost)
 	if err != nil {
@@ -103,6 +123,18 @@ func (service *userService) ChangePassword(dto *dtos.ChangePasswordDTO) error {
 }
 
 func (service *userService) Update(username string, dto *dtos.UpdateDTO) error {
+	// validasi ketika points memiliki nilai negatif
+	if dto.Point < 0 {
+		return errors.New("points cant be negative")
+	}
+	// validasi ketika hearts memiliki nilai negatif
+	if dto.Heart < 0 {
+		return errors.New("heart cant be negative")
+	}
+	// validasi ketika pengurangan hearts lebih dari 1
+	if dto.Heart > 1 {
+		return errors.New("heart cant be reduce more than one")
+	}
 	user, err := service.repository.FindByUsername(username)
 	if err != nil {
 		return err
@@ -117,6 +149,10 @@ func (service *userService) Update(username string, dto *dtos.UpdateDTO) error {
 		currentHeart := user.Heart
 		if currentHeart > 0 {
 			user.Heart -= dto.Heart
+		}
+		// validasi ketika heart pada user bernilai 0 maka akan return error
+		if currentHeart <= 0 {
+			return errors.New("cant reduce heart because current heart value is 0")
 		}
 	}
 	user.LastHeartTime = time.Now()
@@ -147,6 +183,17 @@ func (service *userService) DeleteByUsername(username string) error {
 }
 
 func (service *userService) UploadProfile(dto *dtos.UploadDTO) error {
+	// menentukan type file pada img yang diupload
+	validExts := map[string]bool{
+		".jpg":  true,
+		".jpeg": true,
+		".png":  true,
+	}
+	ext := filepath.Ext(dto.ImgURL)
+	// validasi ketika user mengupload file img yang tidak sesuai
+	if !validExts[ext] {
+		return errors.New("invalid image file type")
+	}
 	user, err := service.repository.FindByUsername(dto.Username)
 	if err != nil {
 		return err

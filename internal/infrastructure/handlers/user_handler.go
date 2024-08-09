@@ -33,8 +33,9 @@ func NewUserHandler(service services.UserService) UserHandler {
 
 func (handler *userHandler) Register(ctx *gin.Context) {
 	var input dtos.RegisterDTO
+	// validasi ketika requestnya salah/kosong
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request payload"})
 		return
 	}
 
@@ -53,8 +54,9 @@ func (handler *userHandler) Register(ctx *gin.Context) {
 
 func (handler *userHandler) Login(ctx *gin.Context) {
 	var input dtos.LoginDTO
+	// validasi ketika requestnya salah/kosong
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request payload"})
 		return
 	}
 
@@ -71,6 +73,7 @@ func (handler *userHandler) Login(ctx *gin.Context) {
 
 func (handler *userHandler) ChangePassword(ctx *gin.Context) {
 	var input dtos.ChangePasswordDTO
+	// validasi ketika requestnya salah/kosong
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request payload"})
 		return
@@ -83,7 +86,7 @@ func (handler *userHandler) ChangePassword(ctx *gin.Context) {
 	input.Username = username.(string)
 	err := handler.service.ChangePassword(&input)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to change password"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -92,8 +95,14 @@ func (handler *userHandler) ChangePassword(ctx *gin.Context) {
 
 func (handler *userHandler) Update(ctx *gin.Context) {
 	var input dtos.UpdateDTO
+	// validasi ketika requesnya salah/kosong
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request payload"})
+		return
+	}
+	// validasi ketika request tidak diisi sama sekali/kosong
+	if input.Name == "" && input.Point == 0 && input.Heart == 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "at least one field must be provided"})
 		return
 	}
 	username, exists := ctx.Get("username")
@@ -103,7 +112,7 @@ func (handler *userHandler) Update(ctx *gin.Context) {
 	}
 
 	if err := handler.service.Update(username.(string), &input); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -207,7 +216,7 @@ func (handler *userHandler) UploadProfile(ctx *gin.Context) {
 		ImgURL:   filepath,
 	}
 	if err := handler.service.UploadProfile(&input); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to upload profile"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
