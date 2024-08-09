@@ -39,3 +39,9 @@ type UploadDTO struct {
 	Username string `json:"username"`
 	ImgURL   string `json:"img_url"`
 }
+
+type LeaderboardDTO struct {
+	Username string `json:"username"`
+	ImgURL   string `json:"img_url"`
+	Points   int    `json:"point"`
+}
