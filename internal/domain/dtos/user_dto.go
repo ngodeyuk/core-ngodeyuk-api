@@ -20,9 +20,10 @@ type ChangePasswordDTO struct {
 }
 
 type UpdateDTO struct {
-	Name  string `json:"name"`
-	Heart int    `json:"heart"`
-	Point int    `json:"point"`
+	Name   string `json:"name"`
+	Heart  int    `json:"heart"`
+	Point  int    `json:"point"`
+	Gender string `json:"gender"`
 }
 
 type UserDTO struct {
@@ -33,6 +34,11 @@ type UserDTO struct {
 	Heart         int       `json:"heart"`
 	LastHeartTime time.Time `json:"last_heart_time"`
 	Points        int       `json:"point"`
+	Gender        string    `json:"gender"`
+	IsMembership  bool      `json:"is_membership"`
+	IsAdmin       bool      `json:"is_admin"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 type UploadDTO struct {

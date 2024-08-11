@@ -148,14 +148,22 @@ func (service *userService) Update(username string, dto *dtos.UpdateDTO) error {
 	if dto.Point > 0 {
 		user.Points += dto.Point
 	}
-	if dto.Heart > 0 {
-		currentHeart := user.Heart
-		if currentHeart > 0 {
-			user.Heart -= dto.Heart
-		}
-		// validasi ketika heart pada user bernilai 0 maka akan return error
-		if currentHeart <= 0 {
-			return errors.New("cant reduce heart because current heart value is 0")
+
+	if dto.Gender != "" {
+		user.Gender = dto.Gender
+	}
+
+	isMember := user.IsMembership == true
+	if !isMember {
+		if dto.Heart > 0 {
+			currentHeart := user.Heart
+			if currentHeart > 0 {
+				user.Heart -= dto.Heart
+			}
+			// validasi ketika heart pada user bernilai 0 maka akan return error
+			if currentHeart <= 0 {
+				return errors.New("cant reduce heart because current heart value is 0")
+			}
 		}
 	}
 	user.LastHeartTime = time.Now()

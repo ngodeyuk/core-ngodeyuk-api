@@ -102,7 +102,7 @@ func (handler *userHandler) Update(ctx *gin.Context) {
 		return
 	}
 	// validasi ketika request tidak diisi sama sekali/kosong
-	if input.Name == "" && input.Point == 0 && input.Heart == 0 {
+	if input.Name == "" && input.Gender == "" && input.Point == 0 && input.Heart == 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "at least one field must be provided"})
 		return
 	}
@@ -119,9 +119,10 @@ func (handler *userHandler) Update(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": gin.H{
-			"name":  input.Name,
-			"point": input.Point,
-			"heart": input.Heart,
+			"name":   input.Name,
+			"point":  input.Point,
+			"heart":  input.Heart,
+			"gender": input.Gender,
 		},
 	})
 }
@@ -135,12 +136,17 @@ func (handler *userHandler) GetAll(ctx *gin.Context) {
 	var response []dtos.UserDTO
 	for _, user := range users {
 		response = append(response, dtos.UserDTO{
-			UserId:   user.UserId,
-			Name:     user.Name,
-			Username: user.Username,
-			ImgURL:   "/" + user.ImgURL,
-			Heart:    user.Heart,
-			Points:   user.Points,
+			UserId:       user.UserId,
+			Name:         user.Name,
+			Username:     user.Username,
+			ImgURL:       "/" + user.ImgURL,
+			Heart:        user.Heart,
+			Points:       user.Points,
+			Gender:       user.Gender,
+			IsMembership: user.IsMembership,
+			IsAdmin:      user.IsAdmin,
+			CreatedAt:    user.CreatedAt,
+			UpdatedAt:    user.UpdatedAt,
 		})
 	}
 	ctx.JSON(http.StatusOK, gin.H{
@@ -160,12 +166,17 @@ func (handler *userHandler) GetByUsername(ctx *gin.Context) {
 		return
 	}
 	response := dtos.UserDTO{
-		UserId:   user.UserId,
-		Name:     user.Name,
-		ImgURL:   "/" + user.ImgURL,
-		Username: user.Username,
-		Heart:    user.Heart,
-		Points:   user.Points,
+		UserId:       user.UserId,
+		Name:         user.Name,
+		ImgURL:       "/" + user.ImgURL,
+		Username:     user.Username,
+		Heart:        user.Heart,
+		Points:       user.Points,
+		Gender:       user.Gender,
+		IsMembership: user.IsMembership,
+		IsAdmin:      user.IsAdmin,
+		CreatedAt:    user.CreatedAt,
+		UpdatedAt:    user.UpdatedAt,
 	}
 	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
