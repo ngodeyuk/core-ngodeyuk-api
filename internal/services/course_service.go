@@ -8,6 +8,8 @@ import (
 
 type CourseService interface {
 	Create(dto *dtos.CourseDTO) error
+	GetAll() ([]models.Course, error)
+	GetByID(courseId uint) (*models.Course, error)
 }
 
 type courseService struct {
@@ -25,4 +27,12 @@ func (service *courseService) Create(dto *dtos.CourseDTO) error {
 	}
 
 	return service.repository.Create(course)
+}
+
+func (service *courseService) GetAll() ([]models.Course, error) {
+	return service.repository.FindAll()
+}
+
+func (service *courseService) GetByID(courseId uint) (*models.Course, error) {
+	return service.repository.FindByID(courseId)
 }

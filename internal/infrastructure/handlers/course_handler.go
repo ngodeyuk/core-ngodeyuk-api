@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -11,6 +12,8 @@ import (
 
 type CourseHandler interface {
 	Create(ctx *gin.Context)
+	GetAll(ctx *gin.Context)
+	GetByID(ctx *gin.Context)
 }
 
 type courseHandler struct {
@@ -21,7 +24,7 @@ func NewCourseHandler(service services.CourseService) CourseHandler {
 	return &courseHandler{service}
 }
 
-func (handler courseHandler) Create(ctx *gin.Context) {
+func (handler *courseHandler) Create(ctx *gin.Context) {
 	var input dtos.CourseDTO
 
 	if err := ctx.ShouldBindJSON(&input); err != nil {
@@ -37,5 +40,47 @@ func (handler courseHandler) Create(ctx *gin.Context) {
 			"name": input.Title,
 			"img":  input.Img,
 		},
+	})
+}
+
+func (handler *courseHandler) GetAll(ctx *gin.Context) {
+	courses, err := handler.service.GetAll()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var response []dtos.CourseDTO
+	for _, course := range courses {
+		response = append(response, dtos.CourseDTO{
+			CourseId: course.CourseId,
+			Title:    course.Title,
+			Img:      course.Img,
+		})
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": response,
+	})
+}
+
+func (handler *courseHandler) GetByID(ctx *gin.Context) {
+	courseIdstr := ctx.Param("course_id")
+	courseId, err := strconv.ParseUint(courseIdstr, 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid course ID"})
+		return
+	}
+	course, err := handler.service.GetByID(uint(courseId))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	response := dtos.CourseDTO{
+		CourseId: course.CourseId,
+		Title:    course.Title,
+		Img:      course.Img,
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": response,
 	})
 }
