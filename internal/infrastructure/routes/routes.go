@@ -38,6 +38,8 @@ func SetupRoutes(route *gin.Engine, db *gorm.DB) {
 		handler := handlers.NewCourseHandler(service)
 
 		api.POST("course", handler.Create)
+		api.GET("course", handler.GetAll)
+		api.GET("course/:course_id", handler.GetByID)
 
 	}
 }
