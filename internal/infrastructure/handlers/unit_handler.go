@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -11,6 +12,8 @@ import (
 
 type UnitHandler interface {
 	Create(ctx *gin.Context)
+	GetAll(ctx *gin.Context)
+	GetByID(ctx *gin.Context)
 }
 
 type unitHandler struct {
@@ -41,5 +44,52 @@ func (handler *unitHandler) Create(ctx *gin.Context) {
 			"description": input.Description,
 			"sequence":    input.Sequence,
 		},
+	})
+}
+
+func (handler *unitHandler) GetAll(ctx *gin.Context) {
+	units, err := handler.service.GetAll()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var response []dtos.UnitDTO
+	for _, unit := range units {
+		response = append(response, dtos.UnitDTO{
+			UnitId:      unit.UnitId,
+			Title:       unit.Title,
+			Description: unit.Description,
+			Sequence:    unit.Sequence,
+		})
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": response,
+	})
+}
+
+func (handler *unitHandler) GetByID(ctx *gin.Context) {
+	unitIdStr := ctx.Param("unit_id")
+	unitId, err := strconv.ParseUint(unitIdStr, 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid unit ID"})
+		return
+	}
+
+	unit, err := handler.service.GetByID(uint(unitId))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	response := dtos.UnitDTO{
+		UnitId:      unit.UnitId,
+		Title:       unit.Title,
+		Description: unit.Description,
+		Sequence:    unit.Sequence,
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": response,
 	})
 }
