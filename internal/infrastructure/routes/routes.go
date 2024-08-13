@@ -11,36 +11,38 @@ import (
 )
 
 func SetupRoutes(route *gin.Engine, db *gorm.DB) {
-	repository := repositories.NewUserRepository(db)
-	service := services.NewUserService(repository)
-	service.StartHeartUpdater()
-	handler := handlers.NewUserHandler(service)
+	userRepository := repositories.NewUserRepository(db)
+	courseRepository := repositories.NewCourseRepository(db)
 
-	route.POST("auth/register", handler.Register)
-	route.POST("auth/login", handler.Login)
+	userService := services.NewUserService(userRepository, courseRepository)
+	userService.StartHeartUpdater()
+	courseService := services.NewCourseService(courseRepository)
+
+	userHandler := handlers.NewUserHandler(userService)
+	courseHandler := handlers.NewCourseHandler(courseService)
+
+	route.POST("auth/register", userHandler.Register)
+	route.POST("auth/login", userHandler.Login)
 
 	user := route.Group("user")
 	user.Use(middleware.AuthMiddleware())
 	{
-		user.PUT("upload", handler.UploadProfile)
-		user.PUT("change-password", handler.ChangePassword)
-		user.PATCH("update", handler.Update)
-		user.GET("/", handler.GetAll)
-		user.GET("current", handler.GetByUsername)
-		user.GET("leaderboard", handler.Leaderboard)
-		user.DELETE("delete", handler.DeleteByUsername)
+		user.PUT("upload", userHandler.UploadProfile)
+		user.PUT("change-password", userHandler.ChangePassword)
+		user.PATCH("update", userHandler.Update)
+		user.GET("/", userHandler.GetAll)
+		user.GET("current", userHandler.GetByUsername)
+		user.GET("leaderboard", userHandler.Leaderboard)
+		user.POST("select-course/:course_id", userHandler.SelectCourse)
+		user.DELETE("delete", userHandler.DeleteByUsername)
 	}
 
 	api := route.Group("api")
 	{
-		repository := repositories.NewCourseRepository(db)
-		service := services.NewCourseService(repository)
-		handler := handlers.NewCourseHandler(service)
-
-		api.POST("course", handler.Create)
-		api.PATCH("course/:course_id", handler.Update)
-		api.GET("course", handler.GetAll)
-		api.GET("course/:course_id", handler.GetByID)
-		api.DELETE("course/:course_id", handler.DeleteByID)
+		api.POST("course", courseHandler.Create)
+		api.PATCH("course/:course_id", courseHandler.Update)
+		api.GET("course", courseHandler.GetAll)
+		api.GET("course/:course_id", courseHandler.GetByID)
+		api.DELETE("course/:course_id", courseHandler.DeleteByID)
 	}
 }

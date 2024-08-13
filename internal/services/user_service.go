@@ -38,15 +38,20 @@ type UserService interface {
 	UploadProfile(dto *dtos.UploadDTO) error
 	// untuk mengembalikan data user berdasarkan point tertinggi
 	Leaderboard() ([]models.User, error)
+	SelectCourse(username string, courseId uint) error
 }
 
 type userService struct {
-	repository repositories.UserRepository
+	repository       repositories.UserRepository
+	courseRepository repositories.CourseRepository
 }
 
 // untuk membuat instance baru dari user service dengan repository
-func NewUserService(repository repositories.UserRepository) UserService {
-	return &userService{repository}
+func NewUserService(
+	repository repositories.UserRepository,
+	courseRepository repositories.CourseRepository,
+) UserService {
+	return &userService{repository, courseRepository}
 }
 
 func (service *userService) Register(dto *dtos.RegisterDTO) error {
@@ -233,4 +238,19 @@ func (service *userService) Leaderboard() ([]models.User, error) {
 		})
 	}
 	return leaderboard, nil
+}
+
+func (service *userService) SelectCourse(username string, courseId uint) error {
+	user, err := service.repository.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+
+	course, err := service.courseRepository.FindByID(courseId)
+	if err != nil {
+		return err
+	}
+
+	user.CourseId = &course.CourseId
+	return service.repository.Update(user)
 }
