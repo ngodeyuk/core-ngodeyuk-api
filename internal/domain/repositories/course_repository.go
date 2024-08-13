@@ -10,6 +10,8 @@ import (
 type CourseRepository interface {
 	// menyimpan data course baru ke database
 	Create(course *models.Course) error
+	//
+	Update(course *models.Course) error
 	// mencari semua data course
 	FindAll() ([]models.Course, error)
 	// mencari data course berdasarkan ID
@@ -31,6 +33,14 @@ func NewCourseRepository(db *gorm.DB) CourseRepository {
 // untuk menyimpan data course baru kedalam database menggunakan gorm
 func (repository *courseRepository) Create(course *models.Course) error {
 	return repository.db.Create(course).Error
+}
+
+// untuk memperbarui data course yang ada didatabase menggunakan gorm
+func (repository *courseRepository) Update(course *models.Course) error {
+	if err := repository.db.Save(course).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 // untuk mencari semua data course yang ada didatabase menggunakan gorm

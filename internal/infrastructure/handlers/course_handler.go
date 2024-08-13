@@ -12,6 +12,7 @@ import (
 
 type CourseHandler interface {
 	Create(ctx *gin.Context)
+	Update(ctx *gin.Context)
 	GetAll(ctx *gin.Context)
 	GetByID(ctx *gin.Context)
 	DeleteByID(ctx *gin.Context)
@@ -42,6 +43,35 @@ func (handler *courseHandler) Create(ctx *gin.Context) {
 			"img":  input.Img,
 		},
 	})
+}
+
+func (handler *courseHandler) Update(ctx *gin.Context) {
+	var input dtos.CourseDTO
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "invalid request payload"})
+		return
+	}
+	courseIdstr := ctx.Param("course_id")
+	courseId, err := strconv.ParseUint(courseIdstr, 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid course ID"})
+		return
+	}
+	course, err := handler.service.GetByID(uint(courseId))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	course.Title = input.Title
+	course.Img = input.Img
+
+	err = handler.service.Update(uint(courseId), &input)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "update course successfully"})
 }
 
 func (handler *courseHandler) GetAll(ctx *gin.Context) {

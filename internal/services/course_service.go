@@ -8,6 +8,7 @@ import (
 
 type CourseService interface {
 	Create(dto *dtos.CourseDTO) error
+	Update(courseId uint, dto *dtos.CourseDTO) error
 	GetAll() ([]models.Course, error)
 	GetByID(courseId uint) (*models.Course, error)
 	DeleteByID(courseId uint) error
@@ -28,6 +29,23 @@ func (service *courseService) Create(dto *dtos.CourseDTO) error {
 	}
 
 	return service.repository.Create(course)
+}
+
+func (service *courseService) Update(courseId uint, dto *dtos.CourseDTO) error {
+	course, err := service.repository.FindByID(courseId)
+	if err != nil {
+		return err
+	}
+	if dto.Title != "" {
+		course.Title = dto.Title
+	}
+	if dto.Img != "" {
+		course.Img = dto.Img
+	}
+	if err := service.repository.Update(course); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (service *courseService) GetAll() ([]models.Course, error) {
