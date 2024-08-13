@@ -14,6 +14,7 @@ type CourseHandler interface {
 	Create(ctx *gin.Context)
 	GetAll(ctx *gin.Context)
 	GetByID(ctx *gin.Context)
+	DeleteByID(ctx *gin.Context)
 }
 
 type courseHandler struct {
@@ -83,4 +84,21 @@ func (handler *courseHandler) GetByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": response,
 	})
+}
+
+func (handler *courseHandler) DeleteByID(ctx *gin.Context) {
+	courseIdstr := ctx.Param("course_id")
+	courseId, err := strconv.ParseUint(courseIdstr, 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid course ID"})
+		return
+	}
+
+	err = handler.service.DeleteByID(uint(courseId))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "delete course successfully"})
 }

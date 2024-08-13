@@ -10,6 +10,7 @@ type CourseService interface {
 	Create(dto *dtos.CourseDTO) error
 	GetAll() ([]models.Course, error)
 	GetByID(courseId uint) (*models.Course, error)
+	DeleteByID(courseId uint) error
 }
 
 type courseService struct {
@@ -35,4 +36,12 @@ func (service *courseService) GetAll() ([]models.Course, error) {
 
 func (service *courseService) GetByID(courseId uint) (*models.Course, error) {
 	return service.repository.FindByID(courseId)
+}
+
+func (service *courseService) DeleteByID(courseId uint) error {
+	course, err := service.repository.FindByID(courseId)
+	if err != nil {
+		return err
+	}
+	return service.repository.Delete(course)
 }

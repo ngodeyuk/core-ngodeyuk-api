@@ -14,6 +14,8 @@ type CourseRepository interface {
 	FindAll() ([]models.Course, error)
 	// mencari data course berdasarkan ID
 	FindByID(courseId uint) (*models.Course, error)
+	// menghapus data course yang ada didatabase
+	Delete(course *models.Course) error
 }
 
 // untuk mengimplementasikan repository course menggunakan gorm
@@ -47,4 +49,12 @@ func (repository *courseRepository) FindByID(courseId uint) (*models.Course, err
 		return nil, err
 	}
 	return &course, nil
+}
+
+// untuk menghapus data course berdasarkan ID yang ada didatabase menggunakan gorm
+func (repository *courseRepository) Delete(course *models.Course) error {
+	if err := repository.db.Delete(course).Error; err != nil {
+		return err
+	}
+	return nil
 }
