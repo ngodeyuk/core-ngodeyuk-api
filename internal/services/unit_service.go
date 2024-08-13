@@ -8,6 +8,8 @@ import (
 
 type UnitService interface {
 	Create(dto *dtos.UnitDTO) error
+	GetAll() ([]models.Unit, error)
+	GetByID(unitId uint) (*models.Unit, error)
 }
 
 type unitService struct {
@@ -25,4 +27,12 @@ func (service *unitService) Create(dto *dtos.UnitDTO) error {
 		Sequence:    dto.Sequence,
 	}
 	return service.repository.Create(unit)
+}
+
+func (service *unitService) GetAll() ([]models.Unit, error) {
+	return service.repository.FindAll()
+}
+
+func (service *unitService) GetByID(unitId uint) (*models.Unit, error) {
+	return service.repository.FindByID(unitId)
 }
