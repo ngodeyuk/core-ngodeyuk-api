@@ -40,6 +40,6 @@ func SetupRoutes(route *gin.Engine, db *gorm.DB) {
 		api.POST("course", handler.Create)
 		api.GET("course", handler.GetAll)
 		api.GET("course/:course_id", handler.GetByID)
-
+		api.DELETE("course/:course_id", handler.DeleteByID)
 	}
 }
