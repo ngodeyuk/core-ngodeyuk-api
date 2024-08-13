@@ -8,6 +8,7 @@ import (
 
 type UnitRepository interface {
 	Create(unit *models.Unit) error
+	Update(unit *models.Unit) error
 	FindAll() ([]models.Unit, error)
 	FindByID(unitId uint) (*models.Unit, error)
 }
@@ -21,7 +22,7 @@ func NewUnitRepository(db *gorm.DB) UnitRepository {
 }
 
 func (repository *unitRepository) Create(unit *models.Unit) error {
-	return repository.db.Save(unit).Error
+	return repository.db.Create(unit).Error
 }
 
 func (repository *unitRepository) FindAll() ([]models.Unit, error) {
@@ -38,4 +39,11 @@ func (repository *unitRepository) FindByID(unitId uint) (*models.Unit, error) {
 		return nil, err
 	}
 	return &unit, nil
+}
+
+func (repository *unitRepository) Update(unit *models.Unit) error {
+	if err := repository.db.Save(unit).Error; err != nil {
+		return err
+	}
+	return nil
 }

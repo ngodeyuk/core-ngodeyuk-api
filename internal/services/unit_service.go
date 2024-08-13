@@ -8,6 +8,7 @@ import (
 
 type UnitService interface {
 	Create(dto *dtos.UnitDTO) error
+	Update(unitId uint, dto *dtos.UnitDTO) error
 	GetAll() ([]models.Unit, error)
 	GetByID(unitId uint) (*models.Unit, error)
 }
@@ -27,6 +28,28 @@ func (service *unitService) Create(dto *dtos.UnitDTO) error {
 		Sequence:    dto.Sequence,
 	}
 	return service.repository.Create(unit)
+}
+
+func (service *unitService) Update(unitId uint, dto *dtos.UnitDTO) error {
+	unit, err := service.repository.FindByID(unitId)
+	if err != nil {
+		return err
+	}
+	if dto.Title != "" {
+		unit.Title = dto.Title
+	}
+
+	if dto.Description != "" {
+		unit.Description = dto.Description
+	}
+
+	if dto.Sequence != 0 {
+		unit.Sequence = dto.Sequence
+	}
+	if err := service.repository.Update(unit); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (service *unitService) GetAll() ([]models.Unit, error) {
