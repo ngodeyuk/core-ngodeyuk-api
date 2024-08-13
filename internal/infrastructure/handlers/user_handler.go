@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -22,6 +23,7 @@ type UserHandler interface {
 	DeleteByUsername(ctx *gin.Context)
 	UploadProfile(ctx *gin.Context)
 	Leaderboard(ctx *gin.Context)
+	SelectCourse(ctx *gin.Context)
 }
 
 type userHandler struct {
@@ -253,4 +255,26 @@ func (handler *userHandler) Leaderboard(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": response,
 	})
+}
+
+func (handler *userHandler) SelectCourse(ctx *gin.Context) {
+	username, exists := ctx.Get("username")
+	if !exists {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	courseIdstr := ctx.Param("course_id")
+	courseId, err := strconv.ParseUint(courseIdstr, 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid course ID"})
+		return
+	}
+
+	err = handler.service.SelectCourse(username.(string), uint(courseId))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "user successfully to select course"})
 }
