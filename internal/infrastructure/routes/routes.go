@@ -13,13 +13,16 @@ import (
 func SetupRoutes(route *gin.Engine, db *gorm.DB) {
 	userRepository := repositories.NewUserRepository(db)
 	courseRepository := repositories.NewCourseRepository(db)
+	unitRepository := repositories.NewUnitRepository(db)
 
 	userService := services.NewUserService(userRepository, courseRepository)
 	userService.StartHeartUpdater()
 	courseService := services.NewCourseService(courseRepository)
+	unitService := services.NewUnitService(unitRepository)
 
 	userHandler := handlers.NewUserHandler(userService)
 	courseHandler := handlers.NewCourseHandler(courseService)
+	UnitHandler := handlers.NewUnitHandler(unitService)
 
 	route.POST("auth/register", userHandler.Register)
 	route.POST("auth/login", userHandler.Login)
@@ -44,5 +47,7 @@ func SetupRoutes(route *gin.Engine, db *gorm.DB) {
 		api.GET("course", courseHandler.GetAll)
 		api.GET("course/:course_id", courseHandler.GetByID)
 		api.DELETE("course/:course_id", courseHandler.DeleteByID)
+
+		api.POST("unit", UnitHandler.Create)
 	}
 }
