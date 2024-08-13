@@ -12,6 +12,7 @@ import (
 
 type UnitHandler interface {
 	Create(ctx *gin.Context)
+	Update(ctx *gin.Context)
 	GetAll(ctx *gin.Context)
 	GetByID(ctx *gin.Context)
 }
@@ -45,6 +46,36 @@ func (handler *unitHandler) Create(ctx *gin.Context) {
 			"sequence":    input.Sequence,
 		},
 	})
+}
+
+func (handler *unitHandler) Update(ctx *gin.Context) {
+	var input dtos.UnitDTO
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "invalid request payload"})
+		return
+	}
+	unitIdStr := ctx.Param("unit_id")
+	unitId, err := strconv.ParseUint(unitIdStr, 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid unit ID"})
+		return
+	}
+	unit, err := handler.service.GetByID(uint(unitId))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	unit.Title = input.Title
+	unit.Description = input.Description
+	unit.Sequence = input.Sequence
+
+	err = handler.service.Update(uint(unitId), &input)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "update unit successfuly"})
 }
 
 func (handler *unitHandler) GetAll(ctx *gin.Context) {
