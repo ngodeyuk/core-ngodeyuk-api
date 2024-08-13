@@ -38,6 +38,7 @@ func SetupRoutes(route *gin.Engine, db *gorm.DB) {
 		handler := handlers.NewCourseHandler(service)
 
 		api.POST("course", handler.Create)
+		api.PATCH("course/:course_id", handler.Update)
 		api.GET("course", handler.GetAll)
 		api.GET("course/:course_id", handler.GetByID)
 		api.DELETE("course/:course_id", handler.DeleteByID)
