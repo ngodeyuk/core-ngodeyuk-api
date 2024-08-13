@@ -52,5 +52,6 @@ func SetupRoutes(route *gin.Engine, db *gorm.DB) {
 		api.PATCH("unit/:unit_id", UnitHandler.Update)
 		api.GET("unit", UnitHandler.GetAll)
 		api.GET("unit/:unit_id", UnitHandler.GetByID)
+		api.DELETE("unit/:unit_id", UnitHandler.DeleteByID)
 	}
 }

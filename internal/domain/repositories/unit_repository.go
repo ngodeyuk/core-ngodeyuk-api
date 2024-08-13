@@ -11,6 +11,7 @@ type UnitRepository interface {
 	Update(unit *models.Unit) error
 	FindAll() ([]models.Unit, error)
 	FindByID(unitId uint) (*models.Unit, error)
+	Delete(unit *models.Unit) error
 }
 
 type unitRepository struct {
@@ -43,6 +44,13 @@ func (repository *unitRepository) FindByID(unitId uint) (*models.Unit, error) {
 
 func (repository *unitRepository) Update(unit *models.Unit) error {
 	if err := repository.db.Save(unit).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repository *unitRepository) Delete(unit *models.Unit) error {
+	if err := repository.db.Delete(unit).Error; err != nil {
 		return err
 	}
 	return nil
