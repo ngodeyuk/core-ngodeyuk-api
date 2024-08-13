@@ -11,6 +11,7 @@ type UnitService interface {
 	Update(unitId uint, dto *dtos.UnitDTO) error
 	GetAll() ([]models.Unit, error)
 	GetByID(unitId uint) (*models.Unit, error)
+	DeleteByID(unitId uint) error
 }
 
 type unitService struct {
@@ -58,4 +59,12 @@ func (service *unitService) GetAll() ([]models.Unit, error) {
 
 func (service *unitService) GetByID(unitId uint) (*models.Unit, error) {
 	return service.repository.FindByID(unitId)
+}
+
+func (service *unitService) DeleteByID(unitId uint) error {
+	unit, err := service.repository.FindByID(unitId)
+	if err != nil {
+		return err
+	}
+	return service.repository.Delete(unit)
 }

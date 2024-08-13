@@ -15,6 +15,7 @@ type UnitHandler interface {
 	Update(ctx *gin.Context)
 	GetAll(ctx *gin.Context)
 	GetByID(ctx *gin.Context)
+	DeleteByID(ctx *gin.Context)
 }
 
 type unitHandler struct {
@@ -123,4 +124,19 @@ func (handler *unitHandler) GetByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": response,
 	})
+}
+
+func (handler *unitHandler) DeleteByID(ctx *gin.Context) {
+	unitIdStr := ctx.Param("unit_id")
+	unitId, err := strconv.ParseUint(unitIdStr, 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid unit ID"})
+		return
+	}
+	err = handler.service.DeleteByID(uint(unitId))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "delete unit successfuly"})
 }
