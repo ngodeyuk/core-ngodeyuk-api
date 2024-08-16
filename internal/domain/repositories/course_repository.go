@@ -10,9 +10,9 @@ import (
 type CourseRepository interface {
 	// menyimpan data course baru ke database
 	Create(course *models.Course) error
-	//
+	// untuk memperbarui data course yang ada didatabase
 	Update(course *models.Course) error
-	// mencari semua data course
+	// mencari semua data course ada didatabase
 	FindAll() ([]models.Course, error)
 	// mencari data course berdasarkan ID
 	FindByID(courseId uint) (*models.Course, error)
