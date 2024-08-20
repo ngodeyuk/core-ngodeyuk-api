@@ -3,14 +3,13 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"ngodeyuk-core/internal/domain/dtos"
+	"ngodeyuk-core/internal/services"
 	"os"
 	"path/filepath"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-
-	"ngodeyuk-core/internal/domain/dtos"
-	"ngodeyuk-core/internal/services"
 )
 
 type UserHandler interface {
@@ -34,6 +33,15 @@ func NewUserHandler(service services.UserService) UserHandler {
 	return &userHandler{service}
 }
 
+// Register godoc
+// @Summary Register a new user
+// @Description Register a new user with the provided details
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body dtos.RegisterDTO true "User registration details"
+// @Success 201 {object} map[string]interface{}
+// @Router /auth/register [post]
 func (handler *userHandler) Register(ctx *gin.Context) {
 	var input dtos.RegisterDTO
 	// validasi ketika requestnya salah/kosong
@@ -55,6 +63,15 @@ func (handler *userHandler) Register(ctx *gin.Context) {
 	})
 }
 
+// Login godoc
+// @Summary Login user
+// @Description Authenticate a user and return a JWT token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param login body dtos.LoginDTO true "User login details"
+// @Success 200 {object} map[string]interface{}
+// @Router /auth/login [post]
 func (handler *userHandler) Login(ctx *gin.Context) {
 	var input dtos.LoginDTO
 	// validasi ketika requestnya salah/kosong
@@ -74,6 +91,16 @@ func (handler *userHandler) Login(ctx *gin.Context) {
 	})
 }
 
+// ChangePassword godoc
+// @Summary Change user password
+// @Description Update the password for the authenticated user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Param password body dtos.ChangePasswordDTO true "New password details"
+// @Success 200 {object} map[string]interface{}
+// @Router /user/change-password [put]
 func (handler *userHandler) ChangePassword(ctx *gin.Context) {
 	var input dtos.ChangePasswordDTO
 	// validasi ketika requestnya salah/kosong
@@ -96,6 +123,16 @@ func (handler *userHandler) ChangePassword(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "change password successfully"})
 }
 
+// Update godoc
+// @Summary Update user profile
+// @Description Update user details such as name, gender, points, and heart
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Param user body dtos.UpdateDTO true "Updated user details"
+// @Success 200 {object} map[string]interface{}
+// @Router /user/update [patch]
 func (handler *userHandler) Update(ctx *gin.Context) {
 	var input dtos.UpdateDTO
 	// validasi ketika requesnya salah/kosong
@@ -129,6 +166,14 @@ func (handler *userHandler) Update(ctx *gin.Context) {
 	})
 }
 
+// GetAll godoc
+// @Summary Get all users
+// @Description Retrieve a list of all users
+// @Tags user
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {array} dtos.UserDTO
+// @Router /user [get]
 func (handler *userHandler) GetAll(ctx *gin.Context) {
 	users, err := handler.service.GetAll()
 	if err != nil {
@@ -156,6 +201,14 @@ func (handler *userHandler) GetAll(ctx *gin.Context) {
 	})
 }
 
+// GetByUsername godoc
+// @Summary Get user by username
+// @Description Retrieve details of a user by their username
+// @Tags user
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {object} dtos.UserDTO
+// @Router /user/current [get]
 func (handler *userHandler) GetByUsername(ctx *gin.Context) {
 	username, exists := ctx.Get("username")
 	if !exists {
@@ -183,6 +236,14 @@ func (handler *userHandler) GetByUsername(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"data": response})
 }
 
+// DeleteByUsername godoc
+// @Summary Delete user by username
+// @Description Delete a user account based on the username
+// @Tags user
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {object} map[string]interface{}
+// @Router /user/delete [delete]
 func (handler *userHandler) DeleteByUsername(ctx *gin.Context) {
 	username, exists := ctx.Get("username")
 	if !exists {
@@ -197,6 +258,16 @@ func (handler *userHandler) DeleteByUsername(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "delete user successfully"})
 }
 
+// UploadProfile godoc
+// @Summary Upload user profile image
+// @Description Upload a new profile image for the authenticated user
+// @Tags user
+// @Accept multipart/form-data
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Param image formData file true "Profile image file"
+// @Success 200 {object} map[string]interface{}
+// @Router /user/upload [post]
 func (handler *userHandler) UploadProfile(ctx *gin.Context) {
 	username, exists := ctx.Get("username")
 	if !exists {
@@ -237,6 +308,14 @@ func (handler *userHandler) UploadProfile(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Profile updated successfully"})
 }
 
+// Leaderboard godoc
+// @Summary Get leaderboard
+// @Description Retrieve the leaderboard with user points and ranking
+// @Tags user
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {array} dtos.LeaderboardDTO
+// @Router /user/leaderboard [get]
 func (handler *userHandler) Leaderboard(ctx *gin.Context) {
 	leaderboard, err := handler.service.Leaderboard()
 	if err != nil {
@@ -257,6 +336,15 @@ func (handler *userHandler) Leaderboard(ctx *gin.Context) {
 	})
 }
 
+// SelectCourse godoc
+// @Summary Select a course for the user
+// @Description Allows the authenticated user to select a course by ID
+// @Tags user
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Param course_id path integer true "Course ID"
+// @Success 200 {object} map[string]interface{}
+// @Router /user/select-course/{course_id} [post]
 func (handler *userHandler) SelectCourse(ctx *gin.Context) {
 	username, exists := ctx.Get("username")
 	if !exists {

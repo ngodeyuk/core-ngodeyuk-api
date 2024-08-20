@@ -1,0 +1,317 @@
+definitions:
+  dtos.ChangePasswordDTO:
+    properties:
+      new_password:
+        type: string
+      old_password:
+        type: string
+      username:
+        type: string
+    required:
+    - new_password
+    - old_password
+    type: object
+  dtos.LeaderboardDTO:
+    properties:
+      img_url:
+        type: string
+      point:
+        type: integer
+      username:
+        type: string
+    type: object
+  dtos.LoginDTO:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  dtos.RegisterDTO:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - name
+    - password
+    - username
+    type: object
+  dtos.UpdateDTO:
+    properties:
+      gender:
+        type: string
+      heart:
+        type: integer
+      name:
+        type: string
+      point:
+        type: integer
+    type: object
+  dtos.UserDTO:
+    properties:
+      created_at:
+        type: string
+      gender:
+        type: string
+      heart:
+        type: integer
+      img_url:
+        type: string
+      is_admin:
+        type: boolean
+      is_membership:
+        type: boolean
+      last_heart_time:
+        type: string
+      name:
+        type: string
+      point:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user and return a JWT token
+      parameters:
+      - description: User login details
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.LoginDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login user
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with the provided details
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.RegisterDTO'
+      produces:
+      - application/json
+      responses: {}
+      summary: Register a new user
+      tags:
+      - auth
+  /user:
+    get:
+      description: Retrieve a list of all users
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dtos.UserDTO'
+            type: array
+      summary: Get all users
+      tags:
+      - user
+  /user/change-password:
+    put:
+      consumes:
+      - application/json
+      description: Update the password for the authenticated user
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: New password details
+        in: body
+        name: password
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.ChangePasswordDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Change user password
+      tags:
+      - user
+  /user/current:
+    get:
+      description: Retrieve details of a user by their username
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.UserDTO'
+      summary: Get user by username
+      tags:
+      - user
+  /user/delete:
+    delete:
+      description: Delete a user account based on the username
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete user by username
+      tags:
+      - user
+  /user/leaderboard:
+    get:
+      description: Retrieve the leaderboard with user points and ranking
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dtos.LeaderboardDTO'
+            type: array
+      summary: Get leaderboard
+      tags:
+      - user
+  /user/select-course/{course_id}:
+    post:
+      description: Allows the authenticated user to select a course by ID
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Course ID
+        in: path
+        name: course_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Select a course for the user
+      tags:
+      - user
+  /user/update:
+    patch:
+      consumes:
+      - application/json
+      description: Update user details such as name, gender, points, and heart
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Updated user details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update user profile
+      tags:
+      - user
+  /user/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a new profile image for the authenticated user
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Profile image file
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Upload user profile image
+      tags:
+      - user
+swagger: "2.0"
