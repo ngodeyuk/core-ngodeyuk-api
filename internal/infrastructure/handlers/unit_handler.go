@@ -2,12 +2,11 @@ package handlers
 
 import (
 	"net/http"
+	"ngodeyuk-core/internal/domain/dtos"
+	"ngodeyuk-core/internal/services"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-
-	"ngodeyuk-core/internal/domain/dtos"
-	"ngodeyuk-core/internal/services"
 )
 
 type UnitHandler interface {
@@ -26,6 +25,16 @@ func NewUnitHandler(service services.UnitService) UnitHandler {
 	return &unitHandler{service}
 }
 
+// Create Unit godoc
+// @Summary Create a new unit
+// @Description Create a new unit with the provided details.
+// @Tags Unit
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Param unit body dtos.UnitDTO true "Create unit data details"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/unit [post]
 func (handler *unitHandler) Create(ctx *gin.Context) {
 	var input dtos.UnitDTO
 
@@ -49,6 +58,17 @@ func (handler *unitHandler) Create(ctx *gin.Context) {
 	})
 }
 
+// Update Unit godoc
+// @Summary Update an existing unit
+// @Description Update an existing unit identified by unit ID with the provided details.
+// @Tags Unit
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Param unit_id path int true "Unit ID"
+// @Param unit body dtos.UnitDTO true "Updated unit data details"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/unit/{unit_id} [patch]
 func (handler *unitHandler) Update(ctx *gin.Context) {
 	var input dtos.UnitDTO
 	if err := ctx.ShouldBindJSON(&input); err != nil {
@@ -79,6 +99,14 @@ func (handler *unitHandler) Update(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "update unit successfuly"})
 }
 
+// GetAll Units godoc
+// @Summary Retrieve all units
+// @Description Retrieve a list of all units.
+// @Tags Unit
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/unit [get]
 func (handler *unitHandler) GetAll(ctx *gin.Context) {
 	units, err := handler.service.GetAll()
 	if err != nil {
@@ -100,6 +128,15 @@ func (handler *unitHandler) GetAll(ctx *gin.Context) {
 	})
 }
 
+// GetByID Unit godoc
+// @Summary Retrieve a unit by ID
+// @Description Retrieve a unit identified by unit ID.
+// @Tags Unit
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Param unit_id path int true "Unit ID"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/unit/{unit_id} [get]
 func (handler *unitHandler) GetByID(ctx *gin.Context) {
 	unitIdStr := ctx.Param("unit_id")
 	unitId, err := strconv.ParseUint(unitIdStr, 10, 32)
@@ -126,6 +163,14 @@ func (handler *unitHandler) GetByID(ctx *gin.Context) {
 	})
 }
 
+// DeleteByID Unit godoc
+// @Summary Delete a unit by ID
+// @Description Delete a unit identified by unit ID.
+// @Tags Unit
+// @Param Authorization header string true "Bearer token"
+// @Param unit_id path int true "Unit ID"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/unit/{unit_id} [delete]
 func (handler *unitHandler) DeleteByID(ctx *gin.Context) {
 	unitIdStr := ctx.Param("unit_id")
 	unitId, err := strconv.ParseUint(unitIdStr, 10, 32)
