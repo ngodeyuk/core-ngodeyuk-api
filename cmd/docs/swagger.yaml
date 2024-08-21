@@ -52,6 +52,17 @@ definitions:
     - password
     - username
     type: object
+  dtos.UnitDTO:
+    properties:
+      description:
+        type: string
+      sequence:
+        type: integer
+      title:
+        type: string
+      unit_id:
+        type: integer
+    type: object
   dtos.UpdateDTO:
     properties:
       gender:
@@ -194,6 +205,133 @@ paths:
       summary: Update an existing course
       tags:
       - Course
+  /api/unit:
+    get:
+      description: Retrieve a list of all units.
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve all units
+      tags:
+      - Unit
+    post:
+      consumes:
+      - application/json
+      description: Create a new unit with the provided details.
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Create unit data details
+        in: body
+        name: unit
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UnitDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new unit
+      tags:
+      - Unit
+  /api/unit/{unit_id}:
+    delete:
+      description: Delete a unit identified by unit ID.
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Unit ID
+        in: path
+        name: unit_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a unit by ID
+      tags:
+      - Unit
+    get:
+      description: Retrieve a unit identified by unit ID.
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Unit ID
+        in: path
+        name: unit_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a unit by ID
+      tags:
+      - Unit
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing unit identified by unit ID with the provided
+        details.
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Unit ID
+        in: path
+        name: unit_id
+        required: true
+        type: integer
+      - description: Updated unit data details
+        in: body
+        name: unit
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UnitDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update an existing unit
+      tags:
+      - Unit
   /auth/login:
     post:
       consumes:
