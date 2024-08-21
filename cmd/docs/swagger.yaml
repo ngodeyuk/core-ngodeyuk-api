@@ -11,6 +11,15 @@ definitions:
     - new_password
     - old_password
     type: object
+  dtos.CourseDTO:
+    properties:
+      course_id:
+        type: integer
+      img:
+        type: string
+      title:
+        type: string
+    type: object
   dtos.LeaderboardDTO:
     properties:
       img_url:
@@ -84,6 +93,107 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/course:
+    get:
+      description: Retrieve a list of all courses.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve all courses
+      tags:
+      - Course
+    post:
+      consumes:
+      - application/json
+      description: Create a new course with the provided details.
+      parameters:
+      - description: Create course data details
+        in: body
+        name: course
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CourseDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new course
+      tags:
+      - Course
+  /api/course/{course_id}:
+    delete:
+      description: Delete a course identified by course ID.
+      parameters:
+      - description: Course ID
+        in: path
+        name: course_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a course by ID
+      tags:
+      - Course
+    get:
+      description: Retrieve a course identified by course ID.
+      parameters:
+      - description: Course ID
+        in: path
+        name: course_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a course by ID
+      tags:
+      - Course
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing course identified by course ID with the provided
+        details.
+      parameters:
+      - description: Course ID
+        in: path
+        name: course_id
+        required: true
+        type: integer
+      - description: Updated course data details
+        in: body
+        name: course
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CourseDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update an existing course
+      tags:
+      - Course
   /auth/login:
     post:
       consumes:
@@ -121,7 +231,12 @@ paths:
           $ref: '#/definitions/dtos.RegisterDTO'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
       summary: Register a new user
       tags:
       - auth
